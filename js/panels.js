@@ -32,8 +32,13 @@ var panel_handles = $(".panel > h1"),
       if (i > 0) {
         offset = (panel_padding * i);
       }
-
-      return global_attrs.panel_width * i + offset + ((panel_padding * 4) * i);
+      
+      //var num = global_attrs.panel_width * i + offset + ((panel_padding * 4) * i);
+      //console.log( ""+global_attrs.panel_width+" * "+i+" + "+offset+" + ("+panel_padding+" * "+4+") * "+i+") = "+num);
+      
+      var num = global_attrs.panel_width * i;
+      
+      return num;
     },
 
     init: function() {
@@ -65,7 +70,10 @@ var panel_handles = $(".panel > h1"),
         mouse_offset.x = e.offsetX;
         mouse_offset.y = e.offsetY;
         static_y = ~~(current_panel.css("top"));
-        static_x = ~~(current_panel.css("left"));
+        static_x = ~~(self.get_x_for_column(current_panel.attr('data-pi')));
+        
+        console.log("static_x = "+static_x);
+        
         static_width = ~~(current_panel.outerWidth());
         static_height = ~~(current_panel.outerHeight());
         panel_padding = ~~(current_panel.css("padding"));
@@ -101,19 +109,16 @@ var panel_handles = $(".panel > h1"),
         if (new_left >= self.interior_offset() &&
           new_left + static_width - (panel_padding * hit_col) <= panel_container.outerWidth()) {
 
-          current_panel.css("left", new_left);
-
+          current_panel.css("left", new_left - 10);
           CC = ~~((new_left + (global_attrs.panel_width / 2)) / global_attrs.panel_width);
-          console.log(CC);
-
           landing_col = CC;
-
           ph_x = self.get_x_for_column(CC);
 
           if (hit_col !== CC) {
             ph.animate({
               left: ph_x + "px"
             }, 55);
+            current_panel.attr("data-pi",landing_col);
           }
 
           hit_col = landing_col;
