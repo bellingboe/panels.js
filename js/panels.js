@@ -47,7 +47,8 @@ var panel_handles = $(".panel > h1"),
     init: function() {
       var self = this,
           i = 0;
-
+          
+      // just some preloading
       panel_handles.each(function() {
         current_panel = $(this).parent();
 
@@ -66,6 +67,7 @@ var panel_handles = $(".panel > h1"),
         i++;
       });
 
+      // Mouse down event
       panel_handles.on('mousedown', function(e) {
         current_panel = $(this).parent();
 
@@ -99,18 +101,19 @@ var panel_handles = $(".panel > h1"),
         });
       });
 
+      // mouse move event
       $(window).on("mousemove", function (e) {
         var new_left = (e.clientX - mouse_offset.x),
-            CC = landing_col,
-            ph_x;
+                  CC = landing_col,
+                ph_x;
 
         if (!is_dragging) {
           return false;
         }
-
+        
         if (
-            new_left >= self.interior_offset() &&
-          (current_panel.offset().left + current_panel.width())  <= panel_container.innerWidth()
+              new_left>= self.interior_offset()
+             // && (current_panel.offset().left + current_panel.width())  <= panel_container.innerWidth() 
           ){
 
           current_panel.css("left", new_left - panel_padding);
@@ -119,9 +122,13 @@ var panel_handles = $(".panel > h1"),
           // The further right you move a panel, the less space you have to move before jumping to the next column
           // Maybe it has something to do with the "+ offset;" on line 42. If I take that out, the snapping seems just fine.
           
-          // ==================== PROBLEM LINE ====================
+          // the logic is as follows:
+          // (our mouse position + half panel width) / panel width = column
+          // that's obviously wrong, but barely.
           
-          landing_col = ~~( ((new_left + (global_attrs.panel_width / 2)) / global_attrs.panel_width) );
+          // ==================== PROBLEM LINE ====================
+          var column = ((new_left + (global_attrs.panel_width / 2)) / global_attrs.panel_width) ;
+          landing_col = ~~(column);
           
           // ==================== PROBLEM LINE ====================
           
@@ -139,8 +146,8 @@ var panel_handles = $(".panel > h1"),
         }
       });
 
+      // mouse up event
       $(window).on("mouseup", function (e) {
-        
         if(landing_col == null){
           current_panel.removeClass("seethru");
           is_dragging = false;
@@ -166,6 +173,7 @@ var panel_handles = $(".panel > h1"),
         current_panel = null;
         landing_col = null;
       });
+      
     }
   };
 
