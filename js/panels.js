@@ -19,7 +19,7 @@ var panel_handles = $(".panel > h1"),
     snap_offset_fix = 0,
     container_width = parseInt(panel_container.css("padding"), 10),
     global_attrs = {
-      panel_width: 200
+      panel_width: 210
     },
 
   exports = {
@@ -39,7 +39,7 @@ var panel_handles = $(".panel > h1"),
       //console.log( ""+global_attrs.panel_width+" * "+i+" + "+offset+" + ("+panel_padding+" * "+4+") * "+i+") = "+num);
       
       snap_offset_fix = offset;
-      var num = (global_attrs.panel_width * i) + offset;
+      var num = (global_attrs.panel_width * i) + 5;
       
       return num;
     },
@@ -76,10 +76,7 @@ var panel_handles = $(".panel > h1"),
         mouse_offset.y = e.offsetY;
         static_y = ~~(current_panel.offset().top);
         static_x = ~~(self.get_x_for_column(current_panel.attr('data-pi')));
-        
-        console.log("static_x = "+static_x);
-        
-        static_width = ~~(current_panel.outerWidth());
+        static_width = current_panel.width();
         static_height = ~~(current_panel.outerHeight());
 
         current_panel.addClass("seethru");
@@ -94,7 +91,6 @@ var panel_handles = $(".panel > h1"),
 
         current_panel.css({
           position: 'absolute',
-          width: static_width,
           height: static_height,
           top: static_y,
           left: static_x
