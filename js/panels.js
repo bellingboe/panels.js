@@ -29,7 +29,8 @@ var panel_handles = $(".panel > h1"),
     },
     
     get_column_for_x: function (x) {
-      return ((x + (global_attrs.panel_width / 2)) / global_attrs.panel_width);
+      var col = ((x + (global_attrs.panel_width / 2)) / global_attrs.panel_width);
+      return col;
     },
 
     get_x_for_column: function(i) {
@@ -42,16 +43,15 @@ var panel_handles = $(".panel > h1"),
       //var num = global_attrs.panel_width * i + offset + ((panel_padding * 4) * i);
       //console.log( ""+global_attrs.panel_width+" * "+i+" + "+offset+" + ("+panel_padding+" * "+4+") * "+i+") = "+num);
       
-      snap_offset_fix = offset;
-      var num = (global_attrs.panel_width * i) + offset;
+      var num = (global_attrs.panel_width * i);
       
       return num;
     },
     
-    in_padding_space_for_col: function(x){
+    in_padding_space_for_col: function(x,c){
 
       var self = this, in_sapce;
-      var starting_x = self.get_x_for_column( self.get_column_for_x(x) );
+      var starting_x = self.get_x_for_column( c );
       var ending_x = starting_x + global_attrs.panel_width;
       
       var starting_padding_left = starting_x - panel_padding;
@@ -147,7 +147,7 @@ var panel_handles = $(".panel > h1"),
           var cur_col = parseInt(current_panel.attr('data-pi'));
           var cur_offset = (cur_col>0 ? cur_col*panel_padding : 0)  -10;
           
-          new_left = ~~(new_left - cur_offset);
+          //new_left = ~~(new_left - cur_offset);
 
           landing_col = ~~(self.get_column_for_x(new_left));
           
