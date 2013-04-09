@@ -16,6 +16,7 @@ var panel_handles = $(".panel > h1"),
     static_width = 0,
     panel_padding = 10,
     panel_container = $(".main"),
+    snap_offset_fix = 0,
     container_width = parseInt(panel_container.css("padding"), 10),
     global_attrs = {
       panel_width: 200
@@ -37,6 +38,7 @@ var panel_handles = $(".panel > h1"),
       //var num = global_attrs.panel_width * i + offset + ((panel_padding * 4) * i);
       //console.log( ""+global_attrs.panel_width+" * "+i+" + "+offset+" + ("+panel_padding+" * "+4+") * "+i+") = "+num);
       
+      snap_offset_fix = offset;
       var num = (global_attrs.panel_width * i) + offset;
       
       return num;
@@ -77,7 +79,6 @@ var panel_handles = $(".panel > h1"),
         
         static_width = ~~(current_panel.outerWidth());
         static_height = ~~(current_panel.outerHeight());
-        //panel_padding = ~~(current_panel.css("padding"));
 
         current_panel.addClass("seethru");
 
@@ -107,15 +108,26 @@ var panel_handles = $(".panel > h1"),
           return false;
         }
 
-        if (new_left >= self.interior_offset() &&
-          new_left + static_width - (panel_padding * hit_col) <= panel_container.outerWidth()) {
+        if (
+            new_left >= self.interior_offset() &&
+          (current_panel.offset().left + current_panel.width())  <= panel_container.innerWidth()
+          ){
 
-          current_panel.css("left", new_left - 10);
-          CC = ~~((new_left + (global_attrs.panel_width / 2)) / global_attrs.panel_width);
-          landing_col = CC;
-          ph_x = self.get_x_for_column(CC);
+          current_panel.css("left", new_left - panel_padding);
+          
+          // This logic to find which column your mouse is in, is faulty.
+          // The further right you move a panel, the less space you have to move before jumping to the next column
+          // Maybe it has something to do with the "+ offset;" on line 42. If I take that out, the snapping seems just fine.
+          
+          // ==================== PROBLEM LINE ====================
+          
+          landing_col = ~~( ((new_left + (global_attrs.panel_width / 2)) / global_attrs.panel_width) );
+          
+          // ==================== PROBLEM LINE ====================
+          
+          ph_x = self.get_x_for_column(landing_col);
 
-          if (hit_col !== CC) {
+          if (hit_col !== landing_col) {
             ph.animate({
               left: ph_x + "px"
             }, 55);
