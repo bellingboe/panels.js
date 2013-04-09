@@ -6,6 +6,7 @@ var panel_handles = $(".panel > h1"),
     ph = $("#placeholder"),
     landing_col = 0,
     hit_col = null,
+    landing_col = null,
     current_panel,
     is_dragging = false,
     mouse_offset = {},
@@ -30,13 +31,13 @@ var panel_handles = $(".panel > h1"),
       var offset = panel_padding;
 
       if (i > 0) {
-        offset = (panel_padding * i);
+        offset = (panel_padding * i+1) + 10;
       }
       
       //var num = global_attrs.panel_width * i + offset + ((panel_padding * 4) * i);
       //console.log( ""+global_attrs.panel_width+" * "+i+" + "+offset+" + ("+panel_padding+" * "+4+") * "+i+") = "+num);
       
-      var num = global_attrs.panel_width * i;
+      var num = (global_attrs.panel_width * i) + offset;
       
       return num;
     },
@@ -49,16 +50,16 @@ var panel_handles = $(".panel > h1"),
         current_panel = $(this).parent();
 
         var x = self.get_x_for_column(i),
-            y = ~~(current_panel.offset().top),
+            y = ~~(current_panel.offset().top + panel_padding),
             w = ~~(current_panel.outerWidth()),
             h = ~~(current_panel.outerHeight());
 
         current_panel.css("position", "absolute").css({
           width: w,
           height: h,
-          left: y,
-          top: x
-        });
+          left: x,
+          top: y
+        }).attr("data-pi",i);
 
         i++;
       });
@@ -69,14 +70,14 @@ var panel_handles = $(".panel > h1"),
         is_dragging = true;
         mouse_offset.x = e.offsetX;
         mouse_offset.y = e.offsetY;
-        static_y = ~~(current_panel.css("top"));
+        static_y = ~~(current_panel.offset().top);
         static_x = ~~(self.get_x_for_column(current_panel.attr('data-pi')));
         
         console.log("static_x = "+static_x);
         
         static_width = ~~(current_panel.outerWidth());
         static_height = ~~(current_panel.outerHeight());
-        panel_padding = ~~(current_panel.css("padding"));
+        //panel_padding = ~~(current_panel.css("padding"));
 
         current_panel.addClass("seethru");
 
@@ -127,12 +128,19 @@ var panel_handles = $(".panel > h1"),
       });
 
       $(window).on("mouseup", function (e) {
+        
+        if(landing_col == null){
+          current_panel.removeClass("seethru");
+          is_dragging = false;
+          current_panel = null;
+          landing_col = null;
+          return;
+        }
+        
         var landing_x = self.get_x_for_column(landing_col);
         if (!is_dragging) {
           return false;
         }
-
-        ph.hide();
 
         current_panel.removeClass("seethru");
 
@@ -144,6 +152,7 @@ var panel_handles = $(".panel > h1"),
 
         is_dragging = false;
         current_panel = null;
+        landing_col = null;
       });
     }
   };
