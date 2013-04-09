@@ -31,7 +31,7 @@ var panel_handles = $(".panel > h1"),
       var offset = panel_padding;
 
       if (i > 0) {
-        offset = (panel_padding * i+1) + 10;
+        offset = (panel_padding * i+1) + panel_padding;
       }
       
       //var num = global_attrs.panel_width * i + offset + ((panel_padding * 4) * i);
