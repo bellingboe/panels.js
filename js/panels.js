@@ -27,6 +27,10 @@ var panel_handles = $(".panel > h1"),
     interior_offset: function () {
       return panel_container.offset().left + container_width;
     },
+    
+    get_column_for_x: function (x) {
+      return ((x + (global_attrs.panel_width / 2)) / global_attrs.panel_width);
+    },
 
     get_x_for_column: function(i) {
       var offset = panel_padding;
@@ -42,6 +46,32 @@ var panel_handles = $(".panel > h1"),
       var num = (global_attrs.panel_width * i) + offset;
       
       return num;
+    },
+    
+    in_padding_space_for_col: function(x,c){
+
+      var self = this, in_sapce;
+      var starting_x = self.get_x_for_column(c+1);
+      var ending_x = starting_x + global_attrs.panel_width;
+      
+      var starting_padding_left = starting_x - panel_padding;
+      var ending_padding_left = starting_x;
+      
+      var starting_padding_right = ending_x;
+      var ending_padding_right = ending_x + panel_padding;
+      
+      console.log("["+starting_padding_left +"     "+ending_padding_left+"] ======= "+x+" ====== ["+starting_padding_right +"     "+ending_padding_right+"] ");
+      
+      if(
+         (x >= starting_padding_left && x <= ending_padding_left) ||
+         (x >= starting_padding_right && x <= ending_padding_right) 
+        ) {
+          in_space = true;
+      }else{
+        in_space = false;
+      }
+      
+      return in_space;
     },
 
     init: function() {
@@ -76,9 +106,6 @@ var panel_handles = $(".panel > h1"),
         mouse_offset.y = e.offsetY;
         static_y = ~~(current_panel.offset().top);
         static_x = ~~(self.get_x_for_column(current_panel.attr('data-pi')));
-        
-        console.log("static_x = "+static_x);
-        
         static_width = ~~(current_panel.outerWidth());
         static_height = ~~(current_panel.outerHeight());
 
@@ -117,6 +144,10 @@ var panel_handles = $(".panel > h1"),
           ){
 
           current_panel.css("left", new_left - panel_padding);
+          var cur_col = parseInt(current_panel.attr('data-pi'));
+          var cur_offset = cur_col>0 ? cur_col*panel_padding : 0;
+          
+          new_left = ~~(new_left - cur_offset);
           
           // This logic to find which column your mouse is in, is faulty.
           // The further right you move a panel, the less space you have to move before jumping to the next column
@@ -125,19 +156,16 @@ var panel_handles = $(".panel > h1"),
           // the logic is as follows:
           // (our mouse position + half panel width) / panel width = column
           // that's obviously wrong, but barely.
-          
-          // ==================== PROBLEM LINE ====================
-          var column = ((new_left + (global_attrs.panel_width / 2)) / global_attrs.panel_width) ;
-          landing_col = ~~(column);
-          
-          // ==================== PROBLEM LINE ====================
+
+          landing_col = ~~(self.get_column_for_x(new_left));
           
           ph_x = self.get_x_for_column(landing_col);
-
-          if (hit_col !== landing_col) {
-            ph.animate({
+          var inspace = self.in_padding_space_for_col(new_left,landing_col);
+          
+          if (hit_col !== landing_col && !inspace) {
+            ph.css({
               left: ph_x + "px"
-            }, 55);
+            });
             current_panel.attr("data-pi",landing_col);
           }
 
