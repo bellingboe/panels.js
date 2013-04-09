@@ -47,32 +47,6 @@ var panel_handles = $(".panel > h1"),
       
       return num;
     },
-    
-    in_padding_space_for_col: function(x,c){
-
-      var self = this, in_sapce;
-      var starting_x = self.get_x_for_column( c );
-      var ending_x = starting_x + global_attrs.panel_width;
-      
-      var starting_padding_left = starting_x - panel_padding;
-      var ending_padding_left = starting_x;
-      
-      var starting_padding_right = ending_x;
-      var ending_padding_right = ending_x + panel_padding;
-      
-      //console.log("["+starting_padding_left +"     "+ending_padding_left+"] ======= "+x+" ====== ["+starting_padding_right +"     "+ending_padding_right+"] ");
-      
-      if(
-         (x >= starting_padding_left && x <= ending_padding_left) ||
-         (x >= starting_padding_right && x <= ending_padding_right) 
-        ) {
-          in_space = true;
-      }else{
-        in_space = false;
-      }
-      
-      return in_space;
-    },
 
     init: function() {
       var self = this,
