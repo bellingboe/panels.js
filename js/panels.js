@@ -48,10 +48,10 @@ var panel_handles = $(".panel > h1"),
       return num;
     },
     
-    in_padding_space_for_col: function(x,c){
+    in_padding_space_for_col: function(x){
 
       var self = this, in_sapce;
-      var starting_x = self.get_x_for_column(c+1);
+      var starting_x = self.get_x_for_column( self.get_column_for_x(x) );
       var ending_x = starting_x + global_attrs.panel_width;
       
       var starting_padding_left = starting_x - panel_padding;
@@ -60,7 +60,7 @@ var panel_handles = $(".panel > h1"),
       var starting_padding_right = ending_x;
       var ending_padding_right = ending_x + panel_padding;
       
-      console.log("["+starting_padding_left +"     "+ending_padding_left+"] ======= "+x+" ====== ["+starting_padding_right +"     "+ending_padding_right+"] ");
+      //console.log("["+starting_padding_left +"     "+ending_padding_left+"] ======= "+x+" ====== ["+starting_padding_right +"     "+ending_padding_right+"] ");
       
       if(
          (x >= starting_padding_left && x <= ending_padding_left) ||
@@ -145,24 +145,15 @@ var panel_handles = $(".panel > h1"),
 
           current_panel.css("left", new_left - panel_padding);
           var cur_col = parseInt(current_panel.attr('data-pi'));
-          var cur_offset = cur_col>0 ? cur_col*panel_padding : 0;
+          var cur_offset = (cur_col>0 ? cur_col*panel_padding : 0)  -10;
           
           new_left = ~~(new_left - cur_offset);
-          
-          // This logic to find which column your mouse is in, is faulty.
-          // The further right you move a panel, the less space you have to move before jumping to the next column
-          // Maybe it has something to do with the "+ offset;" on line 42. If I take that out, the snapping seems just fine.
-          
-          // the logic is as follows:
-          // (our mouse position + half panel width) / panel width = column
-          // that's obviously wrong, but barely.
 
           landing_col = ~~(self.get_column_for_x(new_left));
           
           ph_x = self.get_x_for_column(landing_col);
-          var inspace = self.in_padding_space_for_col(new_left,landing_col);
           
-          if (hit_col !== landing_col && !inspace) {
+          if (hit_col !== landing_col) {
             ph.css({
               left: ph_x + "px"
             });
