@@ -25,7 +25,7 @@ var panel_handles = $(".panel > h1"),
   exports = {
 
     interior_offset: function () {
-      return panel_container.offset().left + container_width;
+      return panel_container.offset().left;
     },
 
     get_x_for_column: function(i) {
@@ -70,10 +70,22 @@ var panel_handles = $(".panel > h1"),
       // Mouse down event
       panel_handles.on('mousedown', function(e) {
         current_panel = $(this).parent();
+        
+        console.log(e);
+        
+        var xpos, ypos;
+        
+        if(e.offsetX==undefined) {
+          xpos = e.pageX-$(this).offset().left;
+          ypos = e.pageY-$(this).offset().top;
+        }else{
+          xpos = e.offsetX;
+          ypos = e.offsetY;
+        }
 
         is_dragging = true;
-        mouse_offset.x = e.offsetX;
-        mouse_offset.y = e.offsetY;
+        mouse_offset.x = xpos;
+        mouse_offset.y = ypos;
         static_y = ~~(current_panel.offset().top);
         static_x = ~~(self.get_x_for_column(current_panel.attr('data-pi')));
         static_width = current_panel.width();
@@ -108,25 +120,13 @@ var panel_handles = $(".panel > h1"),
         }
         
         if (
-              new_left>= self.interior_offset()
-             // && (current_panel.offset().left + current_panel.width())  <= panel_container.innerWidth() 
+              new_left >= self.interior_offset()
           ){
 
           current_panel.css("left", new_left - panel_padding);
           
-          // This logic to find which column your mouse is in, is faulty.
-          // The further right you move a panel, the less space you have to move before jumping to the next column
-          // Maybe it has something to do with the "+ offset;" on line 42. If I take that out, the snapping seems just fine.
-          
-          // the logic is as follows:
-          // (our mouse position + half panel width) / panel width = column
-          // that's obviously wrong, but barely.
-          
-          // ==================== PROBLEM LINE ====================
           var column = ((new_left + (global_attrs.panel_width / 2)) / global_attrs.panel_width) ;
           landing_col = ~~(column);
-          
-          // ==================== PROBLEM LINE ====================
           
           ph_x = self.get_x_for_column(landing_col);
 
@@ -169,7 +169,7 @@ var panel_handles = $(".panel > h1"),
         current_panel = null;
         landing_col = null;
       });
-      
+
     }
   };
 
